@@ -21,7 +21,7 @@ public class MovieController {
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> findAll() {
         try {
-            return BaseResponse.generateResponse("success", HttpStatus.OK, movieService.findAll());
+            return BaseResponse.generateResponse("success", HttpStatus.OK, movieService.findAllMoviesOnly());
         } catch (Exception e) {
             return BaseResponse.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
