@@ -39,8 +39,7 @@ public class MovieController {
     @PutMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> update(@RequestBody Movie movie) {
         try {
-            // TODO("Edit http status")
-            return BaseResponse.generateResponse("success", HttpStatus.CREATED, movieService.updateMovie(movie));
+            return BaseResponse.generateResponse("success", HttpStatus.OK, movieService.updateMovie(movie));
         } catch (InvalidUserInputException e) {
             return BaseResponse.generateResponse(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY, null);
         } catch (Exception e) {
