@@ -13,5 +13,4 @@ public class Person {
     Long id;
 
     private String name;
-//    private int born;
 }
