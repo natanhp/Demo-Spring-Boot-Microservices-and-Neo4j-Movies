@@ -1,5 +1,6 @@
 package id.natanhp.moviesservice.controller;
 
+import id.natanhp.moviesservice.exception.InvalidUserInputException;
 import id.natanhp.moviesservice.model.Movie;
 import id.natanhp.moviesservice.service.MovieService;
 import id.natanhp.moviesservice.util.BaseResponse;
@@ -30,6 +31,17 @@ public class MovieController {
     public ResponseEntity<Object> create(@RequestBody Movie movie) {
         try {
             return BaseResponse.generateResponse("success", HttpStatus.CREATED, movieService.createMovie(movie));
+        } catch (Exception e) {
+            return BaseResponse.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @PutMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> update(@RequestBody Movie movie) {
+        try {
+            return BaseResponse.generateResponse("success", HttpStatus.CREATED, movieService.updateMovie(movie));
+        } catch (InvalidUserInputException e) {
+            return BaseResponse.generateResponse(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY, null);
         } catch (Exception e) {
             return BaseResponse.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
