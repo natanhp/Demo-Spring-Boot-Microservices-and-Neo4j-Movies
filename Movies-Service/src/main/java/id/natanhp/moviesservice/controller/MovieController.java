@@ -39,9 +39,20 @@ public class MovieController {
     @PutMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> update(@RequestBody Movie movie) {
         try {
+            // TODO("Edit http status")
             return BaseResponse.generateResponse("success", HttpStatus.CREATED, movieService.updateMovie(movie));
         } catch (InvalidUserInputException e) {
             return BaseResponse.generateResponse(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY, null);
+        } catch (Exception e) {
+            return BaseResponse.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> deleteById(@PathVariable Long id) {
+        try {
+            movieService.deleteMovieById(id);
+            return BaseResponse.generateResponse("success", HttpStatus.OK, null);
         } catch (Exception e) {
             return BaseResponse.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
