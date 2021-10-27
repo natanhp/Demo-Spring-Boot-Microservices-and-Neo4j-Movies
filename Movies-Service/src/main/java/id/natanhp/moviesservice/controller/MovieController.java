@@ -8,20 +8,33 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/api/movies")
 public class MovieController {
     private final MovieService movieService;
+    private final RestTemplate restTemplate;
 
-    public MovieController(MovieService movieService) {
+    public MovieController(MovieService movieService, RestTemplate restTemplate) {
         this.movieService = movieService;
+        this.restTemplate = restTemplate;
     }
 
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> findAll() {
         try {
             return BaseResponse.generateResponse("success", HttpStatus.OK, movieService.findAllMoviesOnly());
+        } catch (Exception e) {
+            return BaseResponse.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+
+    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> detailById(@PathVariable Long id) {
+        try {
+            var movieObject = restTemplate.getForObject(String.format("http://movie-detail-service/api/movie-detail/%d", id), Object.class);
+            return ResponseEntity.ok(movieObject);
         } catch (Exception e) {
             return BaseResponse.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
