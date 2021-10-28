@@ -1,5 +1,6 @@
 package id.natanhp.data.endpoint;
 
+import id.natanhp.data.dto.GeneralResponse;
 import id.natanhp.data.entity.Movies;
 import id.natanhp.data.service.MoviesService;
 
@@ -9,9 +10,9 @@ import java.util.Optional;
 import com.vaadin.fusion.Endpoint;
 
 import org.vaadin.artur.helpers.GridSorter;
-import org.springframework.data.domain.Page;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.artur.helpers.PagingUtil;
+import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
 import com.vaadin.fusion.Nonnull;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -21,16 +22,22 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 public class MoviesEndpoint {
 
     private MoviesService service;
+    private WebClient webClient;
 
-    public MoviesEndpoint(@Autowired MoviesService service) {
+    public MoviesEndpoint(@Autowired MoviesService service, WebClient.Builder wBuilder) {
         this.service = service;
+        this.webClient = wBuilder.baseUrl("http://localhost:5002/api/movies")
+        .filter(basicAuthentication("a28J0f4pJF6clwqtI0c7", "J4lnhhl4avt21URqzFMQ"))
+        .build();
     }
 
     @Nonnull
     public List<@Nonnull Movies> list(int offset, int limit, @Nonnull List<@Nonnull GridSorter> sortOrder) {
-        Page<Movies> page = service
-                .list(PagingUtil.offsetLimitTypeScriptSortOrdersToPageable(offset, limit, sortOrder));
-        return page.getContent();
+        return webClient.get()
+        .retrieve()
+        .toEntity((Class<GeneralResponse<List<Movies>>>)(Object)GeneralResponse.class)
+        .block()
+        .getBody().getContent();
     }
 
     public Optional<Movies> get(@Nonnull Integer id) {
