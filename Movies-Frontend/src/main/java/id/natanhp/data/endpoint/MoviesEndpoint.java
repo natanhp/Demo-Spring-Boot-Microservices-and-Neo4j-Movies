@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.artur.helpers.PagingUtil;
 
 import com.vaadin.fusion.Nonnull;
-import javax.annotation.security.PermitAll;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 @Endpoint
-@PermitAll
+@AnonymousAllowed
 public class MoviesEndpoint {
 
     private MoviesService service;
