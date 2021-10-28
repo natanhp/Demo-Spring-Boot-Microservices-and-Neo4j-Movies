@@ -35,7 +35,7 @@ public class DataGenerator {
             moviesRepositoryGenerator.setData(Movies::setId, DataType.ID);
             moviesRepositoryGenerator.setData(Movies::setTitle, DataType.FIRST_NAME);
             moviesRepositoryGenerator.setData(Movies::setReleased, DataType.WORD);
-            moviesRepository.saveAll(moviesRepositoryGenerator.create(100, seed));
+            // moviesRepository.saveAll(moviesRepositoryGenerator.create(100, seed));
 
             logger.info("Generated demo data");
         };
