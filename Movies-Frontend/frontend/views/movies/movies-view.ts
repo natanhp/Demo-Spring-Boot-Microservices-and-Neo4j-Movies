@@ -76,13 +76,13 @@ export class MoviesView extends View {
   ) {
     const index = params.page * params.pageSize;
     const data = (await MoviesEndpoint.list(index, params.pageSize, params.sortOrders as any)) as Movies[];
+    this.gridSize = data.length
     callback(data);
   }
 
   async connectedCallback() {
     super.connectedCallback();
     this.classList.add('flex', 'flex-col', 'h-full');
-    this.gridSize = (await MoviesEndpoint.count()) ?? 0;
   }
 
   private async itemSelected(event: CustomEvent) {
