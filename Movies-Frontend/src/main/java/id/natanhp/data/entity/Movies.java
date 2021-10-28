@@ -3,9 +3,12 @@ package id.natanhp.data.entity;
 import javax.persistence.Entity;
 
 import id.natanhp.data.AbstractEntity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vaadin.fusion.Nonnull;
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Movies extends AbstractEntity {
 
     @Nonnull
