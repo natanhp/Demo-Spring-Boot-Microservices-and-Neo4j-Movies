@@ -49,7 +49,7 @@ public class MoviesEndpoint {
         .block()
         .getBody();
 
-        return Optional.of(new Movies(movieDetailJson.get("content").get("title").asText(), movieDetailJson.get("content").get("released").asText()));
+        return Optional.of(new Movies(Long.valueOf(movieDetailJson.get("content").get("id").asText()), movieDetailJson.get("content").get("title").asText(), movieDetailJson.get("content").get("released").asText()));
     }
 
     @Nonnull

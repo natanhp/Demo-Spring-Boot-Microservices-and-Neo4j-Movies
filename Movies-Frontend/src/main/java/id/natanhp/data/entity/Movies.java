@@ -11,6 +11,8 @@ import com.vaadin.fusion.Nonnull;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Movies extends AbstractEntity {
 
+    private Long id;
+
     @Nonnull
     private String title;
     @Nonnull
@@ -19,7 +21,8 @@ public class Movies extends AbstractEntity {
     public Movies() {
     }
 
-    public Movies(String title, String released) {
+    public Movies(Long id, String title, String released) {
+        this.id = id;
         this.title = title;
         this.released = released;
     }
