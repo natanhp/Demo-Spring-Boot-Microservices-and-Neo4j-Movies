@@ -11,10 +11,14 @@ import com.vaadin.fusion.Endpoint;
 
 import org.vaadin.artur.helpers.GridSorter;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
 import com.vaadin.fusion.Nonnull;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 @Endpoint
@@ -41,7 +45,14 @@ public class MoviesEndpoint {
     }
 
     public Optional<Movies> get(@Nonnull Integer id) {
-        return service.get(id);
+        JsonNode movieDetailJson = webClient.get()
+        .uri(uri -> uri.path("/"+id).build())
+        .retrieve()
+        .toEntity(JsonNode.class)
+        .block()
+        .getBody();
+
+        return Optional.of(new Movies(movieDetailJson.get("content").get("title").asText(), movieDetailJson.get("content").get("released").asText()));
     }
 
     @Nonnull
