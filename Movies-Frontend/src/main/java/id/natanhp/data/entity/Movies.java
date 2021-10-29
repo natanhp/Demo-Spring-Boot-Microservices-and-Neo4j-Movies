@@ -16,6 +16,14 @@ public class Movies extends AbstractEntity {
     @Nonnull
     private String released;
 
+    public Movies() {
+    }
+
+    public Movies(String title, String released) {
+        this.title = title;
+        this.released = released;
+    }
+
     public String getTitle() {
         return title;
     }
