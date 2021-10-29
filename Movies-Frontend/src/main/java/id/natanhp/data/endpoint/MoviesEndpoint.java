@@ -1,6 +1,7 @@
 package id.natanhp.data.endpoint;
 
 import id.natanhp.data.dto.GeneralResponse;
+import id.natanhp.data.dto.RequestBodyMovie;
 import id.natanhp.data.entity.Movies;
 import id.natanhp.data.service.MoviesService;
 
@@ -12,6 +13,8 @@ import com.vaadin.fusion.Endpoint;
 import org.vaadin.artur.helpers.GridSorter;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
+
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
 import com.vaadin.fusion.Nonnull;
@@ -52,13 +55,39 @@ public class MoviesEndpoint {
         return Optional.of(new Movies(Long.valueOf(movieDetailJson.get("content").get("id").asText()), movieDetailJson.get("content").get("title").asText(), movieDetailJson.get("content").get("released").asText()));
     }
 
+    public Optional<Movies> create(Movies movie) {
+        movie.setId(null);
+        JsonNode movieDetailJson = webClient.post()
+        .bodyValue(movie)
+        .retrieve()
+        .toEntity(JsonNode.class)
+        .block()
+        .getBody();
+
+        return Optional.of(new Movies(Long.valueOf(movieDetailJson.get("content").get("id").asText()), movieDetailJson.get("content").get("title").asText(), movieDetailJson.get("content").get("released").asText()));
+    }
+
     @Nonnull
-    public Movies update(@Nonnull Movies entity) {
-        return service.update(entity);
+    public Movies update(@Nonnull Movies entity, int id) {
+        RequestBodyMovie requestMovie = new RequestBodyMovie((long) id, entity.getTitle(), entity.getReleased());
+        JsonNode movieDetailJson = webClient.put()
+        .bodyValue(requestMovie)
+        .retrieve()
+        .toEntity(JsonNode.class)
+        .block()
+        .getBody();
+
+        System.out.println(movieDetailJson);
+        return new Movies(Long.valueOf(movieDetailJson.get("content").get("id").asText()), movieDetailJson.get("content").get("title").asText(), movieDetailJson.get("content").get("released").asText());
     }
 
     public void delete(@Nonnull Integer id) {
-        service.delete(id);
+        webClient.delete()
+        .uri(uri -> uri.path("/"+id).build())
+        .retrieve()
+        .toEntity(JsonNode.class)
+        .block()
+        .getBody();
     }
 
     public int count() {
