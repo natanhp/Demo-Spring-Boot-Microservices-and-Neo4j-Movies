@@ -3,48 +3,54 @@ package id.natanhp.moviesservice.service;
 import id.natanhp.moviesservice.exception.InvalidUserInputException;
 import id.natanhp.moviesservice.model.Movie;
 import id.natanhp.moviesservice.repository.MovieRepository;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class MovieService {
 
+    @NonNull
     private final MovieRepository movieRepository;
 
-    public MovieService(MovieRepository movieRepository) {
-        this.movieRepository = movieRepository;
-    }
-
-    public Movie findByTitle(String title) {
+    public Mono<Movie> findByTitle(String title) {
         return movieRepository.findByTitle(title);
     }
 
-    public Iterable<Movie> findAll() {
+    public Flux<Movie> findAll() {
         return movieRepository.findAll();
     }
 
-    public Iterable<Movie> findAllMoviesOnly() {
+    public Flux<Movie> findAllMoviesOnly() {
         return movieRepository.findAllMoviesOnly();
     }
 
-    public Movie createMovie(Movie movie) {
+    public Mono<Movie> createMovie(Movie movie) {
         return movieRepository.save(movie);
     }
 
-    public Movie updateMovie(Movie movie) throws InvalidUserInputException {
+    public Mono<Movie> updateMovie(Movie movie) {
         if (movie.getId() == null) {
-            throw new InvalidUserInputException("Empty movie Id");
+            return Mono.empty()
+                    .flatMap(__ -> Mono.error(new InvalidUserInputException("Empty movie Id")))
+                    .cast(Movie.class);
         }
 
-        if (movieRepository.findById(movie.getId()).isEmpty()) {
-            throw new InvalidUserInputException("Movie does not exist");
-        }
-
-        return movieRepository.save(movie);
+        return movieRepository.findById(movie.getId())
+                .switchIfEmpty(Mono.error(new InvalidUserInputException("Movie does not exist")))
+                .flatMap(__ -> movieRepository.save(movie))
+                .cast(Movie.class);
     }
 
-    public void deleteMovieById(Long id) {
-        movieRepository.deleteById(id);
+    public Mono<Void> deleteMovieById(Long id) {
+        return movieRepository.findById(id)
+                .switchIfEmpty(Mono.error(new InvalidUserInputException("Movie does not exist")))
+                .flatMap(__ -> movieRepository.deleteById(id))
+                .cast(Void.class);
     }
 }
