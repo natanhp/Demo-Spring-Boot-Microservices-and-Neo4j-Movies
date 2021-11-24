@@ -13,7 +13,7 @@ import java.util.List;
 public class Movie {
     @Id
     @GeneratedValue
-    Long id;
+    private Long id;
 
     private String title;
     private int released;

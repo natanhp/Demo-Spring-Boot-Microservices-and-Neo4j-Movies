@@ -10,7 +10,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 public class Person {
     @Id
     @GeneratedValue
-    Long id;
+    private Long id;
 
     private String name;
 }
